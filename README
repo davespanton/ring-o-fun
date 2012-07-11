@@ -1,8 +1,10 @@
-# ring-o-fun
+Ring'o'fun
+==========
 
 Sits between client and CCO, making little changes to what goes by.
 
-## Usage
+Usage
+-----
 
 Launch some flavour of repl.
 
@@ -27,7 +29,8 @@ Which you can manipulate. There are some convenience methods in ring-o-fun.xml t
 to return to passing data through.
 
 
-## License
+License
+-------
 
 Copyright (C) 2012 Dave Spanton
 
