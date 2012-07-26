@@ -30,5 +30,5 @@
       (get-trimmed 0 8 [1 2 3 4 5]) => [1 2 3 4 5]
       (get-trimmed 6 8 [1 2 3 4 5]) => []
       (get-trimmed 1 0 [1 2 3 4 5]) => []
-      (get-trimmed 4 2 [1 2 3 4 5]) => [])
+      (get-trimmed 4 2 [1 2 3 4 5]) => []) 
 

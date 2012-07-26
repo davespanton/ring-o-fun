@@ -1,6 +1,5 @@
 (ns ring-o-fun.xml
   (:require [clojure.contrib.lazy-xml :as xml])
-  (:require [clojure.contrib.zip-filter.xml :as zf])
   (:require [clojure.zip :as zip]))
 
 (defn parse-str
@@ -35,19 +34,9 @@
 
 ; set of 6, update startIndex in 0.096ms
 (defn update-content-in
+  "Updates the content of the item matching tag in the passed collection. If multiple items match tag, all will be replaced with the one new item."
   [tag val coll]
   (assoc coll :content (cons {:tag tag :attrs {} :content (list val)} (filter #(not= (:tag %) tag) (:content coll)))))
-
-; set of 6, update startIndex in 0.56ms
-(defn update-content-in-2
-  "Takes a zipper, tag and value; searchs for a child of the zipper with the passed tag and updates its content to value. Returns a new zipper."
-  [zipper tag val]
-  (loop [loc (zip/down zipper)] 
-    (if (= (:tag (zip/node loc)) tag)
-      (zip/edit loc (fn [node & args] (assoc node :content args)) val)
-      (if (nil? (zip/right loc))
-        loc
-        (recur (zip/right loc))))))
 
 (defn respond
   [grabbed start-index end-index]
@@ -70,17 +59,4 @@
 (defn drop-last-entries
   [n coll]
   (ammend-entries drop-last n coll))
-
-(defn zip-route
-  [tags coll]
-  (apply (partial zf/xml-> (zip/xml-zip coll)) tags))
-
-; Test efficiency compared to the form of editing used to change the startindex property in core.
-; Fix so n is nth entries elements, not nth element that has the last route tag: effects optional tags e.g. brand title
-(defn edit-element 
-  "Edits the value of the node found at position n of the route defined by tags in the supplied collection. 'tags' is expected to be a seq of node tags that form
-   a route through an xml document, eg [:atom:entry :atom:title]."
-  ([coll tags val] (edit-element coll tags val 0))
-  ([coll tags val n] (zip/root (zip/edit (nth (zip-route tags coll) n) #(assoc %1 :content %2) (list val)))))
-
 
