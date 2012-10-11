@@ -28,6 +28,17 @@ Which you can manipulate. There are some convenience methods in ring-o-fun.xml t
 
 to return to passing data through.
 
+Once you've grabbed some data. Here's a few things to do:
+
+	(require ['ring-o-fun.xml :as 'rxml])
+	;; returns a count of atom:entry items currently grabbed
+	(rxml/count-entries @grabbed)
+	;; returns a new map with the first 5 atom:entry items removed and also updates os:totalResults to match
+	(rxml/ammend-entries rxml/drop-entries 5 @grabbed) 
+
+	(require ['ring-o-fun.zip :as 'rzip])
+	;; return a new zipper with the yv:serviceId of the first atom:entry changed to 1193
+	(rzip/feed=> [(rzip/tag :atom:entry) (rzip/tag :yv:serviceId) (rzip/edit (rzip/content) "1193")] @grabbed)
 
 License
 -------
