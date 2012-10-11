@@ -1,10 +1,15 @@
 (ns ring-o-fun.xml
   (:require [clojure.contrib.lazy-xml :as xml])
-  (:require [clojure.zip :as zip]))
+  (:require [clojure.zip :as zip])
+  (:import java.io.ByteArrayInputStream))
 
 (defn parse-str
   [str]
   (xml/parse-trim str))
+
+(defn parse-string
+  [str]
+  (xml/parse-trim (ByteArrayInputStream. (.getBytes str "UTF-8"))))
 
 (defn elements-with-tag 
   [tag coll]

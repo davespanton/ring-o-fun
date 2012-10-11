@@ -7,6 +7,7 @@
 (def host "http://feeds-live.youview.tv")
 (def ISO-8859-1 "8859_1")
 
+
 (def last-req (atom nil))
 (def grabbed (atom nil))
 
@@ -41,7 +42,7 @@
 (defn grab!
   []
   {:pre [(not (nil? @last-req))]}
-  (do (reset! grabbed (rxml/parse-str (http/stream (http/http-agent (get-uri (:uri @last-req) (map-to-query-string (get-all-query-string-map))))))) nil))
+  (do (reset! grabbed (rxml/parse-string (http/string (http/http-agent (get-uri (:uri @last-req) (map-to-query-string (get-all-query-string-map)))) ISO-8859-1))) nil))
 
 (defn release!
   []
@@ -65,7 +66,7 @@
         uri (get-uri (:uri request) (:query-string request))
         resp (http/http-agent uri)]
     (do 
-      (println (:query-string request))
+      (println (str uri " ::: " (:query-string request)))
       (reset! last-req 
                 {:query (:query-string request) 
                  :uri (:uri request) 

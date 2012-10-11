@@ -8,14 +8,14 @@
   (reduce (fn [a b] (b a)) coll fns))
 
 (defn feed=>
-  "As feed->, but zips coll before beggining the reduction and unzips the final result. coll is therefore expected to be a zippable collection, and the result of the last function a zipper"
+  "As feed->, but zips coll before beginning the reduction and unzips the final result. coll is therefore expected to be a zippable collection, and the result of the last function a zipper"
   [fns coll]
   (feed-> (flatten [zip/xml-zip fns zip/root]) coll))
 
 (defn nth-tag
   "Creates a function that excepts a collection as its only arguement. Calling this function will return the nth item with a :tag matching tag. This can be used in conjunction with feed-> to navigate a zipper"
   [n tag]
-  (fn [coll] ((zf/xml-> coll tag) n)))
+  (fn [coll] (nth (zf/xml-> coll tag) n)))
 
 (defn tag
   "As nth tag, but for the first element found"
@@ -36,3 +36,8 @@
   "Returns a function that is a partial application of clojure.zip/edit with f and a single value. This can be used with feed-> to specify an edit step."
   [f val]
   (fn [coll] (zip/edit coll f val)))
+
+(defn dup-last
+  "Returns a function that will append a duplicate of the last item it finds with a :tag matching tag to the :content of its parameter coll. Can be used in conjunction with feed->."
+  [tag]
+  (fn [coll] (zip/append-child coll (zip/node (last (zf/xml-> coll tag))))))

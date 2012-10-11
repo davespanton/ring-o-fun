@@ -56,8 +56,8 @@
   (fact "should grab, convert and store xml based on the last request"
       (with-redefs [last-req (atom some-query)
                     http/http-agent (fn [a] "")
-                    http/stream (fn [a] (get-xml-input-stream))]
-          @grabbed => (rxml/parse-str (get-xml-input-stream)))))
+                    http/string (fn [a b] some-xml)]
+          @grabbed => (rxml/parse-string some-xml))))
 
 (fact "release resets grabbed to nil"
       (with-redefs [grabbed (atom "mumble mumble")]

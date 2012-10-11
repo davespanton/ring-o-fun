@@ -2,8 +2,11 @@
   (:require [clojure.contrib.lazy-xml :as xml])
   (:import java.io.ByteArrayInputStream))
 
+(def entry-values ["a", "b", "c"])
 (def entries
-  {:a "<atom:entry i=\"1\">a</atom:entry>" :b "<atom:entry i=\"2\">b</atom:entry>" :c "<atom:entry i=\"3\">b</atom:entry>"})
+  {:a (str "<atom:entry i=\"1\">" (entry-values 0) "</atom:entry>") 
+   :b (str "<atom:entry i=\"2\">" (entry-values 1) "</atom:entry>") 
+   :c (str "<atom:entry i=\"3\">" (entry-values 2) "</atom:entry>")})
 
 (def xml-parts 
   {:header "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
