@@ -4,19 +4,18 @@
   (:require [clojure.contrib.http.agent :as http])
   (:require [clojure.string :as str]))
 
-(def host "http://feeds-live.youview.tv")
 (def ISO-8859-1 "8859_1")
 
-
+(def host (atom "http://feeds-live.youview.tv"))
 (def last-req (atom nil))
 (def grabbed (atom nil))
 
 (defn kv->sv
   "Converts keyword value pairs to string value pairs. Excludes nil keyed items."
   ([m] (kv->sv m {}))
-  ([m r] (if (empty? m) 
-           r 
-           (if (nil? ((first m) 0)) 
+  ([m r] (if (empty? m)
+           r
+           (if (nil? ((first m) 0))
              (recur (rest m) r)
              (recur (rest m) (assoc r (name ((first m) 0)) ((first m) 1)))))))
 
@@ -37,7 +36,7 @@
 
 (defn get-uri
   [request query-string]
-  (str host request "?" query-string)) 
+  (str @host request "?" query-string))
 
 (defn grab!
   []
@@ -59,23 +58,23 @@
       "0"
       (apply str (take-while (partial not= \<) (.substring res-str (+ index (count target))))))))
 
-(defn handler 
+(defn handler
   "Forwards requests to host and returns the reply."
   [request]
-  (let [headers (assoc (:headers request) "host" host)
+  (let [headers (assoc (:headers request) "host" @host)
         uri (get-uri (:uri request) (:query-string request))
         resp (http/http-agent uri)]
-    (do 
+    (do
       (println (str uri " ::: " (:query-string request)))
-      (reset! last-req 
-                {:query (:query-string request) 
-                 :uri (:uri request) 
+      (reset! last-req
+                {:query (:query-string request)
+                 :uri (:uri request)
                   :length (find-total-results (http/string resp ISO-8859-1))})
-        (if (nil? @grabbed) 
-          (create-response (http/string resp ISO-8859-1) (http/headers resp)) 
-          (create-response 
-            (rxml/respond 
-              @grabbed 
-              (read-string (:startindex (query-string-to-map (:query-string request)))) 
-              (read-string (:endindex (query-string-to-map (:query-string request))))) 
+        (if (nil? @grabbed)
+          (create-response (http/string resp ISO-8859-1) (http/headers resp))
+          (create-response
+            (rxml/respond
+              @grabbed
+              (read-string (:startindex (query-string-to-map (:query-string request))))
+              (read-string (:endindex (query-string-to-map (:query-string request)))))
             (http/headers resp))))))

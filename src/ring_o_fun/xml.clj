@@ -58,6 +58,7 @@
   (update-content-in :os:totalResults (str (count-entries u-coll)) u-coll)))
 
 (defn drop-entries
+  
   [n coll]
   (ammend-entries drop n coll))
 
