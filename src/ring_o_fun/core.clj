@@ -65,7 +65,7 @@
         uri (get-uri (:uri request) (:query-string request))
         resp (http/http-agent uri)]
     (do
-      (println (str uri " ::: " (:query-string request)))
+      (println uri)
       (reset! last-req
                 {:query (:query-string request)
                  :uri (:uri request)

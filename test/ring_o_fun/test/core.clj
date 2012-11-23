@@ -15,7 +15,7 @@
 (defn get-xml-input-stream [] (ByteArrayInputStream. (.getBytes some-xml "UTF-8")))
 
 
-(fact "converts keyword keys to string keys" 
+(fact "converts keyword keys to string keys"
       (kv->sv {:a 1 :b 2 :c 3 :d 4}) => {"a" 1 "b" 2 "c" 3 "d" 4})
 
 (fact "excludes nil key items converting from keyword keys to string keys"
@@ -40,7 +40,7 @@
 
 (fact "creates an empty string from an empty map"
       (map-to-query-string {}) => empty?)
-  
+
 (fact "ammends values from last request into a new query string map"
       (with-redefs [last-req (atom {:length "200" :query "category=something&startindex=26&endindex=50"})]
         (get-all-query-string-map) => {:category "something" :startindex "1" :endindex "200"}))
@@ -50,7 +50,7 @@
         (get-all-query-string-map) => (throws AssertionError)))
 
 (fact "get uri returns expected string"
-      (get-uri "categories" "a=1&b=2") => (str host "categories?a=1&b=2"))
+      (get-uri "categories" "a=1&b=2") => (str @host "categories?a=1&b=2"))
 
 (against-background [ (before :checks (grab!)) ]
   (fact "should grab, convert and store xml based on the last request"
@@ -77,7 +77,7 @@
       (find-total-results "<?xml version='1.0' encoding='ISO-8859-1' ?><some-xml>abc</some-xml>") => "0")
 
 (fact "returns 0 string when input string isn't long enough to contain total length data"
-      (find-total-results "a") => "0") 
+      (find-total-results "a") => "0")
 
 (fact "returns forwarded request when there's no grabbed content"
       (with-redefs [http/http-agent (fn [a] "")
@@ -91,4 +91,4 @@
                     http/string (fn [a b] "abc")
                     http/headers (fn [a] {})
                     grabbed (atom (rxml/parse-str (get-xml-input-stream)))]
-        (handler {:headers {:a "b"} :uri "/feeds" :query-string "startindex=1&endindex=5"}) => #(= (:body %) (rxml/respond (rxml/parse-str (get-xml-input-stream)) 1 5))))            
+        (handler {:headers {:a "b"} :uri "/feeds" :query-string "startindex=1&endindex=5"}) => #(= (:body %) (rxml/respond (rxml/parse-str (get-xml-input-stream)) 1 5))))
