@@ -11,11 +11,11 @@
   [str]
   (xml/parse-trim (ByteArrayInputStream. (.getBytes str "UTF-8"))))
 
-(defn elements-with-tag 
+(defn elements-with-tag
   [tag coll]
   (filter (fn [e] (= (:tag e) tag)) (:content coll)))
 
-(defn elements-without-tag 
+(defn elements-without-tag
   [tag coll]
   (filter (fn [e] (not= (:tag e) tag)) (:content coll)))
 
@@ -52,17 +52,16 @@
   (count (filter #(= (:tag %) :atom:entry) (:content coll))))
 
 (defn ammend-entries
-  "Ammends elements within coll that have the tag 'atom:entry' by applying n and these elements to f. for example passing drop and 5 would remove the first 5 'atom:entry' elements from coll"
+  "Ammends elements within coll that have the tag 'atom:entry' by applying n and these elements to f. for example passing drop and 5 would remove the first 5 'atom:entry' elements from coll. The :os:totalResults node will also be updated if the number of entries has changed."
   [f n coll]
   (let [u-coll (assoc coll :content (concat (f n (elements-with-tag :atom:entry coll)) (elements-without-tag :atom:entry coll)))]
   (update-content-in :os:totalResults (str (count-entries u-coll)) u-coll)))
 
 (defn drop-entries
-  
+
   [n coll]
   (ammend-entries drop n coll))
 
 (defn drop-last-entries
   [n coll]
   (ammend-entries drop-last n coll))
-

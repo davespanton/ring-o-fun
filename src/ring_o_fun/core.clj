@@ -58,6 +58,22 @@
       "0"
       (apply str (take-while (partial not= \<) (.substring res-str (+ index (count target))))))))
 
+(defn reset-last-req! [original-response request]
+  (reset! last-req
+    {:query (:query-string request)
+     :uri (:uri request)
+     :length (find-total-results (http/string original-response ISO-8859-1))}))
+
+(defn respond [original-response request]
+  (if (nil? @grabbed)
+    (create-response (http/string original-response ISO-8859-1) (http/headers original-response))
+    (create-response
+      (rxml/respond
+        @grabbed
+        (read-string (:startindex (query-string-to-map (:query-string request))))
+        (read-string (:endindex (query-string-to-map (:query-string request)))))
+      (http/headers original-response))))
+
 (defn handler
   "Forwards requests to host and returns the reply."
   [request]
@@ -66,15 +82,5 @@
         resp (http/http-agent uri)]
     (do
       (println uri)
-      (reset! last-req
-                {:query (:query-string request)
-                 :uri (:uri request)
-                  :length (find-total-results (http/string resp ISO-8859-1))})
-        (if (nil? @grabbed)
-          (create-response (http/string resp ISO-8859-1) (http/headers resp))
-          (create-response
-            (rxml/respond
-              @grabbed
-              (read-string (:startindex (query-string-to-map (:query-string request))))
-              (read-string (:endindex (query-string-to-map (:query-string request)))))
-            (http/headers resp))))))
+      (reset-last-req! resp request)
+      (respond resp request))))
