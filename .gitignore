@@ -13,3 +13,4 @@
 .settings
 *.swp
 
+.lein-repl-history
